@@ -741,3 +741,9 @@ header .title-desc .description {
 .input-group-prepend .input-group-text {
   width: 100%;
 }
+.quanto-embbed {
+  width: 100%;
+}
+.quanto-embbed#content.content {
+  width: 100%;
+}

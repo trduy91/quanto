@@ -158,7 +158,7 @@ echo '</script>';
                         $formular = '';
                         if (isset($survey['settings'])) {
                             $surveySettings = json_decode($survey['settings']);
-                            $formular = urldecode($surveySettings->formular);
+                            $formular = isset($surveySettings->formular) ? urldecode($surveySettings->formular) : '';
                         }
 
 
@@ -418,6 +418,7 @@ echo '</script>';
         </div>
         <?php
         $clientHost = \Illuminate\Support\Facades\Config::get('constants.clientHost');
+        $adminHost = \Illuminate\Support\Facades\Config::get('constants.adminHost');
         ?>
         <div class="col-4">
 
@@ -466,6 +467,7 @@ echo '</script>';
 
                     if (isset($survey['token'])){
                         echo htmlspecialchars('
+                        <div class="quanto-embbed">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="'. $clientHost .'assets/css/style.css">
@@ -495,17 +497,12 @@ echo '</script>';
                             </div>
                         </header>
                         <div id="content" class="content">
-                            <form action="http://formstylee-admin.com/api/v1/client/save" method="POST">
+                            <form action="'. $adminHost .'/api/v1/client/save" method="POST">
                                 <input type="hidden" name="survey_id" value="0Sc40khVPXyFbzW5h9XG" />
                                 <div id="survey" class="survey">
                                 </div>
 
                             </form>
-                        </div>
-                        <div id="loading-area">
-                            <div class="loader-wrapper">
-                                <div class="loader">Loading...</div>
-                            </div>
                         </div>
                         <script type="text/javascript">
                             var survey_id = "'. $survey['token'].'";
@@ -516,6 +513,7 @@ echo '</script>';
                                 $(\'[data-toggle="popover"]\').popover();
                             });
                         </script>
+                        </div>
 
                     ');
                     }
