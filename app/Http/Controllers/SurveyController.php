@@ -39,7 +39,6 @@ class SurveyController extends Controller
     }
 
     public function formularSave(Request $request) {
-        Log::debug($request);
         if($request->get('id') != null) {
             $survey = Survey::find($request->get('id'));
 
@@ -63,6 +62,7 @@ class SurveyController extends Controller
 			$surveys = Survey::simplePaginate(20);
 		} else {
 			$surveys = Survey::join('users', 'surveys.user_id', 'users.id')
+				->where('users.id',Auth::user()->id)
 				->select('surveys.*')
 				->simplePaginate(20);
 		}
@@ -125,7 +125,7 @@ class SurveyController extends Controller
 			$survey = new Survey();
 		}
 
-		$survey->title = $request->get('title');
+		$survey->title = $request->get('title') ? $request->get('title') : '';
 		$survey->status = $request->get('status');
 		$survey->description = $request->get('description');
 		$survey->background_color = $request->get('background_color');
@@ -153,7 +153,7 @@ class SurveyController extends Controller
 		}
 
 
-        $survey_settings['prefix'] = $request->get('totalPrefix');
+        $survey_settings['prefix'] = $request->get('totalPrefix') ? $request->get('totalPrefix') : '';
 
         $survey_settings['autoSendMail'] = $request->get('autoSendMail');
         $survey->settings = json_encode($survey_settings);
@@ -176,7 +176,7 @@ class SurveyController extends Controller
 					$question = new Question();
 				}
 
-				$question->title = $item['title'];
+				$question->title = isset($item['title']) ? $item['title'] : ' ';
 				if(isset($item['sub_title']))
 					$question->sub_title = $item['sub_title'];
 				else
@@ -253,7 +253,7 @@ class SurveyController extends Controller
 						} else {
 							$answerModel = new Answer();
 						}
-						$answerModel->title = $answerItem['title'];
+						$answerModel->title = isset($answerItem['title']) ? $answerItem['title'] : '' ;
 						$answerModel->type = $answerItem['type'];
 						$answerModel->value = $answerItem['value'];
 						if(isset($answerItem['parent_id'])){
@@ -314,7 +314,6 @@ class SurveyController extends Controller
 		if ($request->get('surveyRedirect')
             && $request->get('surveyRedirect') !== ''
             && Route::has($request->get('surveyRedirect'))  ){
-		    Log::debug($request->get('surveyRedirect'));
 		    return redirect()->route($request->get('surveyRedirect'), [
                 'id' => $survey->id,
             ]);

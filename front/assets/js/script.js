@@ -6,7 +6,8 @@ function newline(str) {
 }
 
 // var serverHost = 'http://formstylee.com/public/';
-var serverHost = 'http://quanto3.com';
+var serverHost = 'https://quanto3.com';
+//var serverHost = 'http://localhost/quanto';
 
 var currentTab = 0;
 var formular = '';
@@ -66,7 +67,6 @@ $(document).ready(function() {
 
     url = serverHost + '/api/v1/survey/get/' + survey_id;
     var request = $.get(url, function(data) {
-        console.log(data);
 
         $('#brand').css('background-image', 'url('+ serverHost +'/' + data.brand_logo_path + ')');
         $('#title span').text(data.title);
@@ -235,9 +235,7 @@ function displaySurvey(data) {
                 scope = {...scope, [q_code]: 0};
             }
 
-            console.log('loop data', data);
             var q_referral = data.referral.filter(re => re.id == q.referral_info);
-            console.log(q_referral);
             q_html += `
             <div class="tab" id="q_${q.id}">Question
               <div class="question">
@@ -323,11 +321,8 @@ function displaySurvey(data) {
 }
 
 function renderAnswer(answerList, questionID) {
-    console.log('answer list', answerList);
     if (answerList.length > 0){
         var answers = answerList.filter((answer) => answer.question_id === questionID)
-        console.log('question_answer', answers);
-        console.log('q_id', questionID);
         var resultHtml = '';
         answers.forEach((ans) => {
             var ans_referral = initial_data.referral.filter(re => re.id == ans.referral_info);
@@ -360,7 +355,6 @@ function renderAnswer(answerList, questionID) {
 }
 
 function handleSelectAnswer(element, questionID, answerID) {
-    console.log(element.parentElement.parentElement.children);
     var answerList = initial_data.answers;
     var questionList = initial_data.questions;
     var currentAnswer = answerList.find((a) => a.id === answerID);
@@ -381,11 +375,8 @@ function handleSelectAnswer(element, questionID, answerID) {
 
             if(listAns != null && listAns != "") {
                 var listAnsArr = [];
-                console.log('listAns', listAns);
                 listAnsArr = JSON.parse(listAns);
                 var index = listAnsArr.indexOf(answerID);
-                console.log('index', index);
-                console.log('listAnsArr', listAnsArr);
                 if (listAnsArr.length > 0 && index > -1) {
                     listAnsArr.splice(index, 1);
                     if (scope[q_code] > Number(currentAnswer.value)) {
@@ -417,7 +408,6 @@ function handleSelectAnswer(element, questionID, answerID) {
             newValue = Number(currentAnswer.value)
         }
         scope = {...scope, [q_code]: newValue };
-        console.log('new scope', scope);
         total = calculate.eval(scope);
         $('#total_result').html(total);
         $('#total_result_hidden').val(total);
@@ -449,7 +439,6 @@ $(document).bind('get-question', function(event, id) {
     url = serverHost + '/api/v1/questions/get/' + id;
     var request = $.get(url, function(data) {
         question_order = data.ord;
-        console.log(data);
         setTimeout(function() {
             $('#q-' + current + ' .q-txt-row#q-txt-row-main .q-txt').html(newline(data.title));
 
@@ -587,7 +576,6 @@ $(document).bind('show-answer-list', function(event, data) {
 });
 
 $(document).bind('show-last-message', function(event, data) {
-    console.log('最後のメッセージです。');
     setTimeout(function() {
         $('#q-' + current + ' .q-txt').html('アンケート内容を送信してください。');
         var form_html = '<div class="q-a-form-fields-wrapper"><div class="q-a-form-fields">';
