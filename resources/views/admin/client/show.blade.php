@@ -112,7 +112,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="http://quanto3.com/admin/client/sendMail" method="POST" >
+                    <form action="https://quanto3.com/admin/client/sendMail" method="POST" >
                         @csrf
                         <input type="hidden" name="id" value="{{ $client->id }}">
                         <div class="row m-5">

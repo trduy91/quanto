@@ -2,13 +2,13 @@
 
 return [
     'mail' => [
-        'host' => 'sv179.xbiz.ne.jp',
+        'host' => 'sv239.xbiz.ne.jp',
         'port' => 465,
-        'username' => 'info@formstylee.com',
-        'password' => 'HappySaaS',
-        'admin_email' => 'info@formstylee.com',
-        'admin_name' => 'formstylee',
+        'username' => 'hosokawa@quanto.xbiz.jp',
+        'password' => 'AutoQuote2021',
+        'admin_email' => 'hosokawa@quanto.xbiz.jp',
+        'admin_name' => 'hosokawa',
     ],
-    'clientHost' => 'http://localhost/quanto/front',
-    'adminHost' => 'http://localhost/quanto'
+    'clientHost' => 'https://quanto3.com/front/',
+    'adminHost' => 'https://quanto3.com'
 ];
