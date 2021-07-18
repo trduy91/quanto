@@ -63,10 +63,6 @@ class SurveyController extends Controller
 			$surveys = Survey::simplePaginate(20);
 		} else {
 			$surveys = Survey::join('users', 'surveys.user_id', 'users.id')
-				->groupBy(['surveys.id','surveys.title', 'surveys.description', 'surveys.status','surveys.background_color',
-					'surveys.char_color', 'surveys.border_color', 'surveys.profile_path', 'surveys.created_at',
-					'surveys.updated_at', 'surveys.user_id'])
-				->where('users.id',Auth::user()->id)
 				->select('surveys.*')
 				->simplePaginate(20);
 		}

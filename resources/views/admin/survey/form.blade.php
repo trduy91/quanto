@@ -424,6 +424,9 @@ echo '</script>';
             <div class="card">
                 <h6 class="form-control-label m-3">
                     URL: <a href="<?php echo $clientHost ?>?id={{ $survey['token'] }}" target="_blank"><?php echo $clientHost ?>?id={{ $survey['token'] }}</a>
+                    <br><br>
+                    <?php $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(150)->generate($clientHost.'?id='.$survey['token'])?>
+                    {!! $qrCode !!}
                 </h6>
                 <h5 class="card-header">
                     プレビュー
