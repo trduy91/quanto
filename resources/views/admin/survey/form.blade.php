@@ -498,7 +498,7 @@ echo '</script>';
                         </header>
                         <div id="content" class="content">
                             <form action="'. $adminHost .'/api/v1/client/save" method="POST">
-                                <input type="hidden" name="survey_id" value="0Sc40khVPXyFbzW5h9XG" />
+                                <input type="hidden" name="survey_id" value="'. $survey['token'] .'" />
                                 <div id="survey" class="survey">
                                 </div>
 
