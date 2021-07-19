@@ -3,7 +3,9 @@ $(function() {
 
     $('#questions-container').find('button').css("display", "none");
     $('#questions-container').find('.buttonEdit').css("display", "block");
+    $('#questions-container').find('.buttonDelete').css("display", "block");
     $('#questions-container').find('input').prop('readonly', true);
+    $('#questions-container').find('input[type="file"]').prop('disabled', true);
     $('#questions-container textarea').prop('readonly', true)
 });
 
