@@ -24,11 +24,11 @@ var avart_name = '';
 var progress_status = -1;
 var initial_data = null;
 var gradient_attrs = [
-    'linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 100%)', 
-    'linear-gradient(160deg, rgba(63,227,220,1) 0%, rgba(51,129,251,1) 50%, rgba(112,109,246,1) 100%)', 
-    'linear-gradient(90deg, rgba(250,116,149,1) 0%, rgba(253,223,65,1) 100%)', 
-    'linear-gradient(130deg, rgba(240,147,251,1) 0%, rgba(244,87,108,1) 100%)', 
-    'linear-gradient(160deg, rgba(32,211,252,1) 0%, rgba(182,32,254,1) 100%)', 
+    'linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 100%)',
+    'linear-gradient(160deg, rgba(63,227,220,1) 0%, rgba(51,129,251,1) 50%, rgba(112,109,246,1) 100%)',
+    'linear-gradient(90deg, rgba(250,116,149,1) 0%, rgba(253,223,65,1) 100%)',
+    'linear-gradient(130deg, rgba(240,147,251,1) 0%, rgba(244,87,108,1) 100%)',
+    'linear-gradient(160deg, rgba(32,211,252,1) 0%, rgba(182,32,254,1) 100%)',
     'linear-gradient(180deg, rgba(243,244,135,1) 0%, rgba(151,250,194,1) 100%)'
 ];
 
@@ -127,7 +127,7 @@ $(document).ready(function() {
         // style_string += 'header .title-desc .description { color: ' + data.char_color + ';} ';
         style_string += 'header .brand-name { color: ' + data.char_color + ';} ';
         style_string += 'header .brand-desc { color: ' + data.char_color +  '; background: ' + data.callout_color + ';} ';
-        
+
         style_string += 'header .progress-row .point { background-color: ' + data.border_color + ';} ';
         style_string += 'header .progress-row .progress-inner .prog-bar-wrap { width: ' + prog_bar_w + ';} ';
         /* style_string += 'header .progress-row .progress-inner .prog-bar-wrap { border-color: ' + data.border_color + ';} ';
@@ -145,7 +145,7 @@ $(document).ready(function() {
     })
     .done(function(data) {
     })
-    .fail(function() {        
+    .fail(function() {
     })
     .always(function() {
 
@@ -220,7 +220,7 @@ function displaySurvey(data) {
     var prefix = '';
     if (settings != null && settings != ''){
         var settingArr = JSON.parse(settings);
-        formular = decodeURIComponent(settingArr['formular']);
+        formular = settingArr['formular'] ? decodeURIComponent(settingArr['formular']) : null;
         prefix = settingArr['prefix'];
 
 
@@ -240,6 +240,13 @@ function displaySurvey(data) {
             <div class="tab" id="q_${q.id}">Question
               <div class="question">
                 <div class="title">${q.title}</div>
+                ${q.file_url ? (
+                  `
+                    <div class="question-image">
+                      <img src="${serverHost}/${q.file_url}">
+                    </div>
+                  `
+                )  : ''}
                 <input type="hidden" id="answer_q_${q.id}" name="answers['${q.id}']">
                 ${q_referral.length > 0 ? (
                     `
@@ -250,19 +257,22 @@ function displaySurvey(data) {
                 ) : ''}
               </div>
               <div class="answerList">
-                ${renderAnswer(data.answers, q.id)}  
+                ${renderAnswer(data.answers, q.id)}
               </div>
             </div>
             `;
         })
-        calculate = math.compile(formular);
-        total = calculate.eval(scope);
+        if (formular) {
+            calculate = math.compile(formular);
+            total = calculate.eval(scope);
+        }
+
 
         q_html += `
             <div class="tab">
                 <div class="q-a-form-fields-wrapper">
                     <div class="q-a-form-fields">
-                        
+
                         <div class="input-group mb-3">
                           <div class="input-group-prepend">
                             <span class="input-group-text" id="inputGroup-sizing-default">メールアドレス</span>
@@ -305,14 +315,18 @@ function displaySurvey(data) {
                   <button type="submit" id="submitBtn" class="btn btn-primary" style="display: none">送信</button>
                 </div>
               </div>`
-        q_html += `
-            <div class="total">
-                <div class="total_title">Total:</div>
-                <div class="prefix">${prefix}</div>
-                <div class="total_result" id="total_result">${total}</div>
-                <input type="hidden" id="total_result_hidden" name="total" value="${total}">
-            </div>
-        `
+        console.log(formular);
+        if (formular!= undefined) {
+            q_html += `
+                <div class="total">
+                    <div class="total_title">Total:</div>
+                    <div class="prefix">${prefix}</div>
+                    <div class="total_result" id="total_result">${total}</div>
+                    <input type="hidden" id="total_result_hidden" name="total" value="${total}">
+                </div>
+            `
+        }
+
     }
     $('#survey').html(q_html);
     $('[data-toggle="popover"]').popover();
@@ -326,24 +340,58 @@ function renderAnswer(answerList, questionID) {
         var resultHtml = '';
         answers.forEach((ans) => {
             var ans_referral = initial_data.referral.filter(re => re.id == ans.referral_info);
-
-            resultHtml += `
+            if (ans.type == 1) {
+                resultHtml += `
+                    <div class="answer-input">
+                        <div class="title">${ans.title}</div>
+                        ${ans.file_url ? (
+                            `
+                            <div class="answer-image" onclick="handleSelectAnswer(this, ${questionID}, ${ans.id})">
+                              <img src="${serverHost}/${ans.file_url}">
+                            </div>
+                          `
+                        )  : ''}
+                        ${ans_referral.length > 0 ? (
+                            `
+                            <span class="referralInfo"
+                                data-toggle="popover"
+                                data-html="true"
+                                data-title="${ans_referral[0].name}"
+                                data-content="${unescape(ans_referral[0].info)}">
+                                <i class="fas fa-info-circle"></i>
+                            </span>
+                            `
+                        ) : ''}
+                        <input type="text" class="answer_${ans.id} answerText" oninput="handleChangeText(this, ${questionID}, ${ans.id})" />
+                    </div>
+                `
+            }else {
+                resultHtml += `
             <div class="answer-select">
                 <div class="title" onclick="handleSelectAnswer(this, ${questionID}, ${ans.id})">${ans.title}</div>
+                ${ans.file_url ? (
+                    `
+                    <div class="answer-image" onclick="handleSelectAnswer(this, ${questionID}, ${ans.id})">
+                      <img src="${serverHost}/${ans.file_url}">
+                    </div>
+                  `
+                )  : ''}
                 ${ans_referral.length > 0 ? (
                     `
-                    <span class="referralInfo" 
-                        data-toggle="popover" 
+                    <span class="referralInfo"
+                        data-toggle="popover"
                         data-html="true"
-                        data-title="${ans_referral[0].name}" 
+                        data-title="${ans_referral[0].name}"
                         data-content="${unescape(ans_referral[0].info)}">
                         <i class="fas fa-info-circle"></i>
                     </span>
                     `
                 ) : ''}
-                
+
             </div>
-        `}
+        `
+            }
+        }
         )
         return `
             <div class="answer">
@@ -352,6 +400,24 @@ function renderAnswer(answerList, questionID) {
         `;
     }
 
+}
+function handleChangeText(element, questionID, answerID) {
+    var answerList = initial_data.answers;
+    var currentAnswer = answerList.find((a) => a.id === answerID);
+    if (currentAnswer){
+        $(`#answer_q_${questionID}`).val( element.value);
+        var nextQuestion = currentAnswer.next_question_id;
+        if (nextQuestion != null && nextQuestion != 0) {
+            $('#nextBtn').data('nextQuestion', nextQuestion);
+        }
+
+        $('#nextBtn').attr('disabled', true);
+        if (element.value != '') {
+            $('#nextBtn').attr('disabled', false);
+            $('#prevBtn').attr('disabled', false);
+        }
+
+    }
 }
 
 function handleSelectAnswer(element, questionID, answerID) {
@@ -408,9 +474,11 @@ function handleSelectAnswer(element, questionID, answerID) {
             newValue = Number(currentAnswer.value)
         }
         scope = {...scope, [q_code]: newValue };
-        total = calculate.eval(scope);
-        $('#total_result').html(total);
-        $('#total_result_hidden').val(total);
+        if (calculate) {
+            total = calculate.eval(scope);
+            $('#total_result').html(total);
+            $('#total_result_hidden').val(total);
+        }
 
         $('#nextBtn').attr('disabled', true);
         for (var i = 0; i < parents.length; i++) {
@@ -431,7 +499,7 @@ function add_first_question(data) {
 
     $('#q-' + current).show();
     EPPZScrollTo.scrollVerticalToElementById('end-anchor', 20);
-    
+
     $(document).trigger('get-question', [data.first_question.id]);
 }
 
@@ -451,7 +519,7 @@ $(document).bind('get-question', function(event, id) {
     })
     .done(function(data) {
     })
-    .fail(function() {        
+    .fail(function() {
     })
     .always(function() {
     });
@@ -543,7 +611,7 @@ $(document).bind('show-answer-list', function(event, data) {
             // EPPZScrollTo.scrollVerticalToElementById('end-anchor', 20);
 
             var a_height = $(window).height() - ($(this).parent().parent().parent().parent().outerHeight() + $('.site-header').outerHeight() + 16);
-            
+
             addA(a_height);
 
             setTimeout(function() {

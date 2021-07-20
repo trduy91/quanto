@@ -255,7 +255,7 @@ class SurveyController extends Controller
 						}
 						$answerModel->title = isset($answerItem['title']) ? $answerItem['title'] : '' ;
 						$answerModel->type = $answerItem['type'];
-						$answerModel->value = $answerItem['value'];
+						$answerModel->value = isset($answerItem['value']) ? $answerItem['value'] : '';
 						if(isset($answerItem['parent_id'])){
 							$answerModel->parent_id = $answerItem['parent_id'];
 						}
@@ -265,7 +265,7 @@ class SurveyController extends Controller
 						$answerModel->survey_id = $survey->id;
 						$answerModel->question_id = $question->id;
 						$answerModel->ord = $a_ord;
-						$answerModel->referral_info = $answerItem['referral_info'];
+						$answerModel->referral_info = isset($answerItem['referral_info']) ? $answerItem['referral_info'] : null;
 						$answerModel->save();
 						if (isset($question_files[$key]['answers'][$a_key]['file_url'])) {
 							$answer_file = $question_files[$key]['answers'][$a_key]['file_url'];

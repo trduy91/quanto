@@ -197,7 +197,7 @@ echo '</script>';
                                             <textarea placeholder="質問" class="form-control" name="questions[q_{{$q_index}}][title]" required>{{$question->title}}</textarea>
                                         </div>
                                         <div class="col-md-1 d-flex align-items-center">
-                                            <button type="button" class="btn btn-danger" onclick="onDelete('question_{{$q_index}}')">
+                                            <button type="button" class="btn btn-danger buttonDelete" onclick="onDelete('question_{{$q_index}}')">
                                                 <i class="fa fa-times"></i>
                                             </button>
                                             <button type="button" class="btn btn-primary buttonEdit" style="display: block" onclick="onEdit('question_{{$q_index}}')"><i class="fa fa-pen"></i></button>
@@ -220,6 +220,17 @@ echo '</script>';
                                             </select>
                                         </div>
                                     </div>
+                                    @if ($question->file_url != null)
+                                        <div class="row">
+                                            <img src="{{ asset($question->file_url) }}" class="col fs-question-image mb-2">
+                                        </div>
+                                    @endif
+                                    <div class="row form-group">
+                                        <div class="col-md">
+                                            <input type="file" class="form-control"
+                                                   name="questions[q_{{$q_index}}][file_url]">
+                                        </div>
+                                    </div>
 
                                     <div id="subQues-div{{ $q_index }}">
                                         @if(isset($question->sub_title) && $question->sub_title != "")
@@ -236,54 +247,7 @@ echo '</script>';
                                             </div>
                                         @endif
                                     </div>
-                                    @if($question->type == 3)
-                                        <?php
-                                        if(isset($question->movie_file) && $question->movie_file != "") {
-                                            $file_name = explode('/', $question->movie_file);
-                                            $file_name = $file_name[count($file_name) - 1];
-                                        } else {
-                                            $file_name = '動画を選択してください。';
-                                        }
-                                        ?>
-                                        <div class="row">
-                                            <div class="col-md-10">
-                                                <div class="form-group">
-                                                    <input type="file" class="form-control-file d-none" style="opacity: 0;" name="questions[q_{{$q_index}}][movie_file]"  id="questions[q_{{$q_index}}][movie_file]{{$q_index}}">
-                                                    <input type="hidden" name="questions[q_{{$q_index}}][movie_file_tmp]" data-name="questions[q_{{$q_index}}][movie_file]{{$q_index}}" data-index="questions[q_{{$q_index}}][movie_file]" id="questions[q_{{$q_index}}][movie_file_tmp]{{$q_index}}" value="{{ !empty($question->movie_file) ? $question->movie_file : '-'  }}">
-                                                    <label for="questions[q_{{$q_index}}][movie_file]{{$q_index}}" class="form-control-label btn btn-primary">{{ $file_name }}</label>
-                                                    <p class="text-danger">（* テキスト）</p>
-                                                    <a href="https://cloudconvert.com/mov-to-mp4">https://cloudconvert.com/mov-to-mp4</a>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-1">
-                                                <div class="form-group">
-                                                    <button type="button" class="btn btn-danger" onclick="onDeleteMovie('questions[q_{{$q_index}}][movie_file]', '{{$q_index}}')">
-                                                        <i class="fa fa-times"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12 mt-2">
-                                            <textarea class="form-control" name="questions[q_{{$q_index}}][movie_source]" placeholder="ソースコード(iframe)でアップ（1024以下の文字を入力してください。）">{{ isset($question->movie_source) ? $question->movie_source : '' }}</textarea>
-                                        </div>
-                                        <div class="col-md-12 mt-2 mb-2">
-                                            <input type="text" class="form-control" name="questions[q_{{$q_index}}][movie_url]" value="{{ isset($question->movie_url) ? $question->movie_url : '' }}" placeholder="URLでアップ(YoutubeなどのURL)">
-                                        </div>
-                                    @endif
 
-                                    @if ($question->type == 2)
-                                        @if ($question->file_url != null)
-                                            <div class="row">
-                                                <img src="{{ asset($question->file_url) }}" class="col fs-question-image mb-2">
-                                            </div>
-                                        @endif
-                                        <div class="row form-group">
-                                            <div class="col-md">
-                                                <input type="file" class="form-control"
-                                                       name="questions[q_{{$q_index}}][file_url]">
-                                            </div>
-                                        </div>
-                                    @endif
                                     <div class="d-flex mb-1">
                                         <div id="answers_{{$q_index}}" class="d-flex answerDropArea flex-wrap">
                                             @php
@@ -305,7 +269,7 @@ echo '</script>';
                                             @endphp
                                             @foreach($answers as $answer)
 
-                                                @if ($answer->type != 4 && $answer->type != 5)
+                                                @if ($answer->type != 4 && $answer->type != 5 && $answer->question_id == $question->id)
                                                     <?php
                                                     if ($hasRadio) {
                                                         $hasRadio = false;
@@ -318,7 +282,7 @@ echo '</script>';
                                                 <div class="answer card mr-2 mb-2" id="_answer_{{$a_index}}">
                                                     <div class="card-header d-flex justify-content-between p-2">
                                                         <span>回答</span>
-                                                        <button class="text-danger buttonDelete" type="button" onclick="onDelete('_answer_{{$a_index}}')"><i class="fa fa-times"></i></button>
+                                                        <button class="text-danger buttonDeleteAnswer" type="button" onclick="onDelete('_answer_{{$a_index}}')"><i class="fa fa-times"></i></button>
 
                                                     </div>
                                                     <div class="card-body p-2">
@@ -346,48 +310,59 @@ echo '</script>';
                                                 </div>
                                                 @endif
                                                 @if (($answer->type == 4 || $answer->type == 5) && $answer->question_id == $question->id)
-                                                @if (!$hasRadio)
-                                                <div class="answer card mr-2 mb-2" id="_answer_{{$a_index}}">
-                                                    <div class="card-header d-flex justify-content-between p-2">
-                                                        <span>回答</span>
-                                                        <button class="text-danger buttonDelete" type="button" onclick="onDelete('_answer_{{$a_index}}', this)"><i class="fa fa-times"></i></button>
-                                                    </div>
-                                                    <div class="card-body p-2 row">
-                                                @endif
-                                                        <?php
-                                                        $hasRadio = true;
-                                                        ?>
-                                                        <div class="col-6 p-1">
-                                                            <input type="hidden" value="{{$answer->id}}" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][id]">
-                                                            <input type="hidden" value="{{$answer->type}}" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][type]">
-                                                            <label>回答</label>
-                                                            <input placeholder="回答" class="form-control" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][title]" required value="{{$answer->title}}" />
-                                                            <label>値</label>
-                                                            <input placeholder="値" class="form-control" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][value]" required value="{{$answer->value}}" />
-                                                            <label>関連情報</label>
-                                                            <select class="form-control" disabled name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][referral_info]" id="referralInfo">
-                                                                <option value=""></option>
-                                                                @foreach($referral_info as $ref)
-                                                                    <option value="{{$ref->id}}" {{$ref->id == $answer->referral_info ? 'selected' : ''}}>{{$ref->name}}</option>
+                                                    @if (!$hasRadio)
+                                                    <div class="answer card mr-2 mb-2" id="_answer_{{$a_index}}">
+                                                        <div class="card-header d-flex justify-content-between p-2">
+                                                            <span>回答</span>
+                                                            <button class="text-danger buttonDeleteAnswer" type="button" onclick="onDelete('_answer_{{$a_index}}', this)"><i class="fa fa-times"></i></button>
+                                                        </div>
+                                                        <div class="card-body p-2 row">
+                                                    @endif
+                                                    <?php
+                                                    $hasRadio = true;
+                                                    ?>
+                                                    <div class="col-6 p-1">
+                                                        <input type="hidden" value="{{$answer->id}}" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][id]">
+                                                        <input type="hidden" value="{{$answer->type}}" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][type]">
+                                                        <label>回答</label>
+                                                        <input placeholder="回答" class="form-control" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][title]" required value="{{$answer->title}}" />
+                                                        <label>値</label>
+                                                        <input placeholder="値" class="form-control" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][value]" required value="{{$answer->value}}" />
+                                                        <label>関連情報</label>
+                                                        <select class="form-control" disabled name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][referral_info]" id="referralInfo">
+                                                            <option value=""></option>
+                                                            @foreach($referral_info as $ref)
+                                                                <option value="{{$ref->id}}" {{$ref->id == $answer->referral_info ? 'selected' : ''}}>{{$ref->name}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        @if ($answer->file_url != null)
+                                                            <div class="row">
+                                                                <img src="{{ asset($answer->file_url) }}" class="col fs-question-image mb-2">
+                                                            </div>
+                                                        @endif
+                                                        <div class="row form-group">
+                                                            <div class="col-md">
+                                                                <input type="file" class="form-control"
+                                                                       name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][file_url]">
+                                                            </div>
+                                                        </div>
+                                                        @if (count($parents) > 1)
+                                                            集団
+                                                            <select class="form-control mt-1" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][parent_id]">
+                                                                @foreach($parents as $item)
+                                                                    <option value="{{ $item['id'] }}" {{$item['id'] == $answer->parent_id ? 'selected' : ''}}>{{ $item['title'] }}</option>
                                                                 @endforeach
                                                             </select>
-                                                            @if (count($parents) > 1)
-                                                                集団
-                                                                <select class="form-control mt-1" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][parent_id]">
-                                                                    @foreach($parents as $item)
-                                                                        <option value="{{ $item['id'] }}" {{$item['id'] == $answer->parent_id ? 'selected' : ''}}>{{ $item['title'] }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            @endif
-                                                            @if (count($next_questions) > 1)
-                                                                次の問題
-                                                                <select class="form-control mt-1" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][next_question_id]">
-                                                                    @foreach($next_questions as $n_item)
-                                                                        <option value="{{ $n_item['id'] }}" {{$n_item['id'] == $answer->next_question_id ? 'selected' : ''}}>{{ $n_item['title'] }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            @endif
-                                                        </div>
+                                                        @endif
+                                                        @if (count($next_questions) > 1)
+                                                            次の問題
+                                                            <select class="form-control mt-1" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][next_question_id]">
+                                                                @foreach($next_questions as $n_item)
+                                                                    <option value="{{ $n_item['id'] }}" {{$n_item['id'] == $answer->next_question_id ? 'selected' : ''}}>{{ $n_item['title'] }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        @endif
+                                                    </div>
 
                                                 @php $a_index++;
                                                 @endphp

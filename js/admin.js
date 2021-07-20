@@ -24,7 +24,9 @@ var currentQuestionId = null;
         // $('#questions-container').append($('.dropArea .question'));
         $('#questions-container').find('button').css("display", "none");
         $('#questions-container').find('.buttonEdit').css("display", "block");
+        $('#questions-container').find('.buttonDelete').css("display", "block");
         $('#questions-container').find('input').prop('readonly', true);
+        $('#questions-container').find('input[type="file"]').prop('disabled', true);
         $('#questions-container').find('select#referralInfo').prop('disabled', true);
         $('#questions-container').find('select#questionReferralInfo').prop('disabled', true);
         $('#questions-container textarea').prop('readonly', true)
@@ -121,6 +123,7 @@ var currentQuestionId = null;
 
     $("form").on("submit", function() {
         $('#questions-container').find('select').prop('disabled', false);
+        $('#questions-container').find('input[type="file"]').prop('disabled', false);
     })
 
 })(jQuery);
@@ -128,7 +131,12 @@ var currentQuestionId = null;
 function onDelete(id) {
     result = window.confirm('本当に削除しますか？')
     if(result) {
-        $(`.modal-content #${id}`).remove();
+        if ($('#modalAddQuestion').hasClass('show')) {
+            $(`.modal-content #${id}`).remove();
+        } else {
+            $(`#questions-container #${id}`).remove();
+        }
+
     }
 }
 
