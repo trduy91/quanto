@@ -5,6 +5,7 @@ var DRAG_TYPE = {
     ANSWER: 2,
 };
 var currentQuestionId = null;
+var questionData = [];
 (function ($) {
 
 
@@ -27,9 +28,10 @@ var currentQuestionId = null;
         $('#questions-container').find('.buttonDelete').css("display", "block");
         $('#questions-container').find('input').prop('readonly', true);
         $('#questions-container').find('input[type="file"]').prop('disabled', true);
-        $('#questions-container').find('select#referralInfo').prop('disabled', true);
-        $('#questions-container').find('select#questionReferralInfo').prop('disabled', true);
+        $('#questions-container').find('select.referralInfo').prop('disabled', true);
+        $('#questions-container').find('select.questionReferralInfo').prop('disabled', true);
         $('#questions-container textarea').prop('readonly', true)
+        currentQuestionId = null;
 
 ///////////////////////////////
 
