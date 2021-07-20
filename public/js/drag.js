@@ -1,4 +1,3 @@
-var currentQuestion = 0;
 function allowDrop(ev) {
     ev.preventDefault();
 }
@@ -32,14 +31,9 @@ function dropAnswer(ev) {
     if (ev.dataTransfer.getData("answer")) {
         var data = JSON.parse(ev.dataTransfer.getData("answer"));
         var answer = data.answer;
-        var id = answer.id;
         var type = data.type;
         if (type === DRAG_TYPE.ANSWER) {
-            if (id === 4 || id === 5){
-                $(ev.target).html(renderAnswer(answer));
-            } else {
-                $(ev.target).append(renderAnswer(answer));
-            }
+            $(ev.target).html(renderAnswer(answer));
 
         }
     }
@@ -48,7 +42,7 @@ function dropAnswer(ev) {
 
 function onNewField( a_index, id, currentQ) {
 
-    var answerArea = $(`#question_${currentQ} #_answer_${a_index}`);
+    var answerArea = $(`#modalAddQuestion #question_${currentQ} #answers_${a_index}`);
     var referralOption = '<option value=""></option>';
     referral_info.forEach((info) => {
 
@@ -60,34 +54,43 @@ function onNewField( a_index, id, currentQ) {
         <div class="col-6 p-1">
             <input type="hidden" value="${id}" name="questions[q_${currentQ}][answers][a_${index}][type]">
             <label>回答</label>
-            <input placeholder="回答" class="form-control" name="questions[q_${currentQ}][answers][a_${index}][title]" required />
+            <input placeholder="回答" class="form-control" name="questions[q_${currentQ}][answers][a_${index}][title]" id="answer_${currentQ}_${index}_title" oninput="handleInputText('answer_${currentQ}_${index}_title',this.value)" required />
             <label>値</label>
-            <input class="form-control" name="questions[q_${currentQ}][answers][a_${index}][value]" placeholder="価格" />
+            <input class="form-control" name="questions[q_${currentQ}][answers][a_${index}][value]" placeholder="価格" id="answer_${currentQ}_${index}_value" oninput="handleInputText('answer_${currentQ}_${index}_value',this.value)" />
             <label>関連情報</label>
-            <select class="form-control" name="questions[q_${currentQ}][answers][a_${index}][referral_info]" id="referralInfo">
+            <select class="form-control referralInfo" name="questions[q_${currentQ}][answers][a_${index}][referral_info]" id="answer_${currentQ}_${index}_referral_info" oninput="handleInputText('answer_${currentQ}_${index}_referral_info',this.value)" >
                 ${referralOption}
             </select>
+            <label>回答写真</label>
+            <input type="file" class="form-control mb-2" name="questions[q_${currentQ}][answers][a_${index}][file_url]">
         </div>
     `);
 }
 
 function onEdit(id) {
-    currentQuestionId = $(`#${id}`).find('.questionID').val();
+    currentQuestionId = $(`#questions-container #${id}`).find('.questionID').val();
     $('#modalAddQuestion').modal('toggle');
     $('.dropArea').html($(`#${id}`).parent().html());
     $('.dropArea').find('button').css("display", "block");
     $('.dropArea').find('.buttonEdit').css("display", "none");
     $('.dropArea').find('input').prop("readonly", false);
+    $('.dropArea').find('input[type="file"]').prop("disabled", false);
     $('.dropArea').find('textarea').prop("readonly", false);
     $('.dropArea').find('select').prop("disabled", false);
     $('.dropArea').find('select').prop("readonly", false);
     // $('.dropArea').find('select#referralInfo').prop('disabled', false);
+    // if (questionData[id]) {
+    //     $(`#modalAddQuestion #${id}_title`).val(questionData[id]['title']);
+    // }
+    for(var k in questionData) {
+        $(`#modalAddQuestion #${k}`).val(questionData[k]);
+    }
 
 }
 
 function renderAnswer(answer) {
     var id = answer.id;
-    var a_index = $(`#answers_${currentQuestion} .answerDropArea > div`).length + 1;
+    var a_index = $(`#answers_${currentQuestionId} .answerDropArea > div`).length + 1;
     var referralOption = '<option value=""></option>';
     referral_info.forEach((info) => {
 
@@ -101,53 +104,32 @@ function renderAnswer(answer) {
         <div class="answer card mr-2 mb-2" id="_answer_${a_index}">
             <div class="card-header d-flex justify-content-between p-2">
                 <span>回答 ${answer.name}</span>
-                <button type="button" class="text-danger buttonDelete" onclick="onDelete('_answer_${a_index}')"><i class="fa fa-times"></i></button>
+                <button type="button" class="text-danger buttonDeleteAnswer" onclick="onDelete('_answer_${a_index}')"><i class="fa fa-times"></i></button>
             </div>
             <div class="card-body p-2 row">
-                <input type="hidden" value="${id}" name="questions[q_${currentQuestion}][answers][a_${a_index}][type]">
+                <input type="hidden" value="${id}" name="questions[q_${currentQuestionId}][answers][a_${a_index}][type]">
                 <div class="col p-1">
                     <label>回答</label>
-                    <input placeholder="回答" class="form-control" name="questions[q_${currentQuestion}][answers][a_${a_index}][title]" required />
+                    <input placeholder="回答" class="form-control" name="questions[q_${currentQuestionId}][answers][a_${a_index}][title]" id="answer_${currentQuestionId}_${a_index}_title" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_title',this.value)" required />
                     <label>値</label>
-                    <input class="form-control" name="questions[q_${currentQuestion}][answers][a_${a_index}][value]" placeholder="価格" />
+                    <input class="form-control" name="questions[q_${currentQuestionId}][answers][a_${a_index}][value]" placeholder="価格" id="answer_${currentQuestionId}_${a_index}_value" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_value',this.value)" />
                     <label>関連情報</label>
-                    <select class="form-control" name="questions[q_${currentQuestion}][answers][a_${a_index}][referral_info]" id="referralInfo">
+                    <select class="form-control referralInfo" name="questions[q_${currentQuestionId}][answers][a_${a_index}][referral_info]" id="answer_${currentQuestionId}_${a_index}_referral_info" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_referral_info',this.value)">
                     ${referralOption}
                     </select>
+                    <label>回答写真</label>
+                    <input type="file" class="form-control mb-2" name="questions[q_${currentQuestionId}][answers][a_${a_index}][file_url]" id="answer_${currentQuestionId}_${a_index}_file_url" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_file_url',this.value)">
+
                 </div>
 
 
             </div>
-            <button class="btn btn-primary" onclick="onNewField(${a_index}, ${id}, ${currentQuestion})"><i class="fa fa-plus"></i></button>
+            <button class="btn btn-primary" onclick="onNewField(${a_index}, ${id}, ${currentQuestionId})"><i class="fa fa-plus"></i></button>
         </div>
         `;
     }
 
-    if (id === 2) {
-        return `
-            <div class="answer card mr-2 mb-2" id="_answer_${a_index}">
-                <div class="card-header d-flex justify-content-between p-2">
-                    <span>回答 ${answer.name}</span>
-                    <button type="button" class="text-danger buttonDelete" onclick="onDelete('_answer_${a_index}')"><i class="fa fa-times"></i></button>
-                </div>
-                <div class="card-body p-2 row">
-                    <div class="col">
-                        <input type="hidden" value="${id}" name="questions[q_${currentQuestion}][answers][a_${a_index}][type]">
-                        <input type="file" class="form-control mb-2" name="questions[q_${currentQuestion}][answers][a_${a_index}][file_url]">
-                        <textarea placeholder="回答" class="form-control" name="questions[q_${currentQuestion}][answers][a_${a_index}][title]" required></textarea>
-                        <input type="number" min="0" name="questions[q_${currentQuestion}][answers][a_${a_index}][value]" placeholder="価格" />
-                        <div>
-                            <select class="form-control" name="questions[q_${currentQuestion}][answers][a_${a_index}][referral_info]" id="referralInfo">
-                            ${referralOption}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-
+    //text input answer
     return `
         <div class="answer card mr-2 mb-2" id="_answer_${a_index}">
             <div class="card-header d-flex justify-content-between p-2">
@@ -156,11 +138,10 @@ function renderAnswer(answer) {
             </div>
             <div class="card-body p-2 row">
                 <div class="col">
-                    <input type="hidden" value="${id}" name="questions[q_${currentQuestion}][answers][a_${a_index}][type]">
-                    <textarea placeholder="回答" class="form-control" name="questions[q_${currentQuestion}][answers][a_${a_index}][title]" required></textarea>
-                    <input type="number" min="0" name="questions[q_${currentQuestion}][answers][a_${a_index}][value]" placeholder="価格" />
+                    <input type="hidden" value="${id}" name="questions[q_${currentQuestionId}][answers][a_${a_index}][type]">
+                    <textarea placeholder="回答" class="form-control" name="questions[q_${currentQuestionId}][answers][a_${a_index}][title]" id="answer_${currentQuestionId}_${a_index}_title" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_title',this.value)" required></textarea>
                     <div>
-                        <select class="form-control" name="questions[q_${currentQuestion}][answers][a_${a_index}][referral_info]" id="referralInfo">
+                        <select class="form-control referralInfo" name="questions[q_${currentQuestionId}][answers][a_${a_index}][referral_info]" id="answer_${currentQuestionId}_${a_index}_referral_info" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_referral_info',this.value)">
                         ${referralOption}
                         </select>
                     </div>
@@ -176,21 +157,23 @@ function renderQuestion(id) {
     while ($(`#question_${q_index}`).length > 0) {
         q_index++;
     }
-    currentQuestion = q_index;
+    currentQuestionId = q_index;
     var referralOption = '<option value=""></option>';
     referral_info.forEach((info) => {
 
         referralOption += `<option value="${info.id}">${info.name}</option>`
 
     })
-    if (id === 2 ){
-        return `
+    return `
             <div class="question" id="question_${q_index}">
-                <input type="hidden" value="${id}" name="questions[q_${q_index}][type]">
+                <input type="hidden" value="${id}" class="questionType" name="questions[q_${q_index}][type]">
+                <input type="hidden" value="${q_index}" class="questionID">
+
                 <div class="row form-group ">
-                    <label  class="ml-2 pl-1 col-form-label d-flex align-items-center">質問</label>
+                    <label  class="ml-2 pl-1 col-form-label d-flex al{q_index}:ign-items-center">質問</label>
                     <div class="col-md-8">
-                        <input type="text" placeholder="質問" class="form-control" name="questions[q_${q_index}][title]" required>
+
+                        <input type="text" placeholder="質問" value="" id="question_${q_index}_title" class="form-control" name="questions[q_${q_index}][title]" required oninput="handleInputText('question_${q_index}_title',this.value)">
                     </div>
                     <div class="col-md-1 d-flex align-items-center">
                         <button type="button" class="btn btn-danger buttonDelete" onclick="onDelete('question_${q_index}')"><i class="fa fa-times"></i></button>
@@ -206,110 +189,15 @@ function renderQuestion(id) {
                 <div class="row form-group ">
                     <label  class="ml-2 pl-1 col-form-label d-flex al{q_index}:ign-items-center">関連情報</label>
                     <div class="col-md-8">
-                        <select class="form-control" name="questions[q_${q_index}][referral_info]" id="questionReferralInfo">
+
+                        <select class="form-control" name="questions[q_${q_index}][referral_info]" class="questionReferralInfo" id="questionReferralInfo_${q_index}" onchange="handleInputText('questionReferralInfo_${q_index}', this.value)">
                         ${referralOption}
                         </select>
                     </div>
                 </div>
                 <div class="row form-group">
                     <div class="col-md">
-                        <input type="file" class="form-control" name="questions[q_${q_index}][file_url]">
-                    </div>
-                </div>
-                <div class="d-flex mb-2">
-                    <div id="answers_${q_index}" class="d-flex answerDropArea flex-wrap" ondrop="dropAnswer(event)">
-
-                    </div>
-                </div>
-            </div>
-        `;
-    } else if (id === 3) {
-        return `
-            <div class="question" id="question_${q_index}">
-                <input type="hidden" value="${id}" name="questions[q_${q_index}][type]">
-                <div class="row form-group ">
-                    <label  class="ml-2 pl-1 col-form-label d-flex align-items-center">質問</label>
-                    <div class="col-md-8">
-                        <input type="text" placeholder="質問" class="form-control" name="questions[q_${q_index}][title]" required>
-                    </div>
-                    <div class="col-md-1 d-flex align-items-center">
-                        <button type="button" class="btn btn-danger buttonDelete" onclick="onDelete('question_${q_index}')"><i class="fa fa-times"></i></button>
-                        <button type="button" class="btn btn-primary buttonEdit" style="display: none" onclick="onEdit('question_${q_index}')"><i class="fa fa-pen"></i></button>
-                    </div>
-                </div>
-                <div class="row form-group ">
-                    <label  class="ml-2 pl-1 col-form-label d-flex al{q_index}:ign-items-center">質問コード</label>
-                    <div class="col-md-8">
-                        <input type="text" value="q_${q_index}" name="questions[q_${q_index}][question_code]" />
-                    </div>
-                </div>
-                <div class="row form-group ">
-                    <label  class="ml-2 pl-1 col-form-label d-flex al{q_index}:ign-items-center">関連情報</label>
-                    <div class="col-md-8">
-                        <select class="form-control" name="questions[q_${q_index}][referral_info]" id="questionReferralInfo">
-                        ${referralOption}
-                        </select>
-                    </div>
-                </div>
-                <div class="row form-group">
-                    <div class="col-md-10">
-                        <div class="form-group">
-                            <input type="file" class="form-control-file d-none" name="questions[q_${q_index}][movie_file]" id="questions[q_${q_index}][movie_file]${q_index}">
-                            <input type="hidden" name="questions[q_${q_index}][movie_file_tmp]" data-name="questions[q_${q_index}][movie_file]${q_index}" data-index="questions[q_${q_index}][movie_file_tmp]" id="questions[q_${q_index}][movie_file_tmp]${q_index}" value="-">
-                            <label for="questions[q_${q_index}][movie_file]${q_index}" class="form-control-label btn btn-primary">動画を選択してください。</label>
-                            <p class="text-danger">（* テキスト）</p>
-                            <a href="https://cloudconvert.com/mov-to-mp4">https://cloudconvert.com/mov-to-mp4</a>
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="form-group">
-                            <button type="button" class="btn btn-danger" onclick="onDeleteMovie('questions[q_${q_index}][movie_file]', '${q_index}')">
-                                <i class="fa fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-md-12 mt-2">
-                        <textarea class="form-control" name="questions[q_${q_index}][movie_source]"  placeholder="ソースコード(iframe)でアップ（1024以下の文字を入力してください。）"></textarea>
-                    </div>
-                    <div class="col-md-12 mt-2">
-                        <input type="text" class="form-control" name="questions[q_${q_index}][movie_url]"  placeholder="URLでアップ(YoutubeなどのURL)">
-                    </div>
-                </div>
-                <div class="d-flex mb-2">
-                    <div id="answers_${q_index}" class="d-flex answerDropArea flex-wrap" ondrop="dropAnswer(event)">
-
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-    return `
-            <div class="question" id="question_${q_index}">
-                <input type="hidden" value="${id}" name="questions[q_${q_index}][type]">
-
-                <div class="row form-group ">
-                    <label  class="ml-2 pl-1 col-form-label d-flex al{q_index}:ign-items-center">質問</label>
-                    <div class="col-md-8">
-                        <input type="text" placeholder="質問" class="form-control" name="questions[q_${q_index}][title]" required>
-                    </div>
-                    <div class="col-md-1 d-flex align-items-center">
-                        <button type="button" class="btn btn-danger buttonDelete" onclick="onDelete('question_${q_index}')"><i class="fa fa-times"></i></button>
-                        <button type="button" class="btn btn-primary buttonEdit" style="display: none" onclick="onEdit('question_${q_index}')"><i class="fa fa-pen"></i></button>
-                    </div>
-                </div>
-                <div class="row form-group ">
-                    <label  class="ml-2 pl-1 col-form-label d-flex al{q_index}:ign-items-center">質問コード</label>
-                    <div class="col-md-8">
-                        <input type="text" value="q_${q_index}" name="questions[q_${q_index}][question_code]" />
-                    </div>
-                </div>
-                <div class="row form-group ">
-                    <label  class="ml-2 pl-1 col-form-label d-flex al{q_index}:ign-items-center">関連情報</label>
-                    <div class="col-md-8">
-
-                        <select class="form-control" name="questions[q_${q_index}][referral_info]" id="questionReferralInfo">
-                        ${referralOption}
-                        </select>
+                        <input type="file" class="form-control" value="" id="question_${q_index}_file_url" name="questions[q_${q_index}][file_url]" oninput="handleInputText('question_${q_index}_file_url',this.prop('files'))" />
                     </div>
                 </div>
                 <div class="d-flex mb-2">
@@ -375,4 +263,10 @@ function submitFormular(){
     var formular = $('#formularSetting textarea').val();
     $('#formularSetting #formularValue').val(encodeURIComponent(formular));
     $('#formularSetting').submit();
+}
+
+function handleInputText(key, value) {
+    if (value) {
+        questionData[key] = value;
+    }
 }
