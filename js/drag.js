@@ -1,4 +1,3 @@
-var currentQuestion = 0;
 function allowDrop(ev) {
     ev.preventDefault();
 }
@@ -43,7 +42,7 @@ function dropAnswer(ev) {
 
 function onNewField( a_index, id, currentQ) {
 
-    var answerArea = $(`#question_${currentQ} #_answer_${a_index}`);
+    var answerArea = $(`#modalAddQuestion #question_${currentQ} #answers_${a_index}`);
     var referralOption = '<option value=""></option>';
     referral_info.forEach((info) => {
 
@@ -55,11 +54,11 @@ function onNewField( a_index, id, currentQ) {
         <div class="col-6 p-1">
             <input type="hidden" value="${id}" name="questions[q_${currentQ}][answers][a_${index}][type]">
             <label>回答</label>
-            <input placeholder="回答" class="form-control" name="questions[q_${currentQ}][answers][a_${index}][title]" required />
+            <input placeholder="回答" class="form-control" name="questions[q_${currentQ}][answers][a_${index}][title]" id="answer_${currentQ}_${index}_title" oninput="handleInputText('answer_${currentQ}_${index}_title',this.value)" required />
             <label>値</label>
-            <input class="form-control" name="questions[q_${currentQ}][answers][a_${index}][value]" placeholder="価格" />
+            <input class="form-control" name="questions[q_${currentQ}][answers][a_${index}][value]" placeholder="価格" id="answer_${currentQ}_${index}_value" oninput="handleInputText('answer_${currentQ}_${index}_value',this.value)" />
             <label>関連情報</label>
-            <select class="form-control" name="questions[q_${currentQ}][answers][a_${index}][referral_info]" id="referralInfo">
+            <select class="form-control referralInfo" name="questions[q_${currentQ}][answers][a_${index}][referral_info]" id="answer_${currentQ}_${index}_referral_info" oninput="handleInputText('answer_${currentQ}_${index}_referral_info',this.value)" >
                 ${referralOption}
             </select>
             <label>回答写真</label>
@@ -69,7 +68,7 @@ function onNewField( a_index, id, currentQ) {
 }
 
 function onEdit(id) {
-    currentQuestionId = $(`#${id}`).find('.questionID').val();
+    currentQuestionId = $(`#questions-container #${id}`).find('.questionID').val();
     $('#modalAddQuestion').modal('toggle');
     $('.dropArea').html($(`#${id}`).parent().html());
     $('.dropArea').find('button').css("display", "block");
@@ -80,12 +79,18 @@ function onEdit(id) {
     $('.dropArea').find('select').prop("disabled", false);
     $('.dropArea').find('select').prop("readonly", false);
     // $('.dropArea').find('select#referralInfo').prop('disabled', false);
+    // if (questionData[id]) {
+    //     $(`#modalAddQuestion #${id}_title`).val(questionData[id]['title']);
+    // }
+    for(var k in questionData) {
+        $(`#modalAddQuestion #${k}`).val(questionData[k]);
+    }
 
 }
 
 function renderAnswer(answer) {
     var id = answer.id;
-    var a_index = $(`#answers_${currentQuestion} .answerDropArea > div`).length + 1;
+    var a_index = $(`#answers_${currentQuestionId} .answerDropArea > div`).length + 1;
     var referralOption = '<option value=""></option>';
     referral_info.forEach((info) => {
 
@@ -102,24 +107,24 @@ function renderAnswer(answer) {
                 <button type="button" class="text-danger buttonDeleteAnswer" onclick="onDelete('_answer_${a_index}')"><i class="fa fa-times"></i></button>
             </div>
             <div class="card-body p-2 row">
-                <input type="hidden" value="${id}" name="questions[q_${currentQuestion}][answers][a_${a_index}][type]">
+                <input type="hidden" value="${id}" name="questions[q_${currentQuestionId}][answers][a_${a_index}][type]">
                 <div class="col p-1">
                     <label>回答</label>
-                    <input placeholder="回答" class="form-control" name="questions[q_${currentQuestion}][answers][a_${a_index}][title]" required />
+                    <input placeholder="回答" class="form-control" name="questions[q_${currentQuestionId}][answers][a_${a_index}][title]" id="answer_${currentQuestionId}_${a_index}_title" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_title',this.value)" required />
                     <label>値</label>
-                    <input class="form-control" name="questions[q_${currentQuestion}][answers][a_${a_index}][value]" placeholder="価格" />
+                    <input class="form-control" name="questions[q_${currentQuestionId}][answers][a_${a_index}][value]" placeholder="価格" id="answer_${currentQuestionId}_${a_index}_value" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_value',this.value)" />
                     <label>関連情報</label>
-                    <select class="form-control" name="questions[q_${currentQuestion}][answers][a_${a_index}][referral_info]" id="referralInfo">
+                    <select class="form-control referralInfo" name="questions[q_${currentQuestionId}][answers][a_${a_index}][referral_info]" id="answer_${currentQuestionId}_${a_index}_referral_info" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_referral_info',this.value)">
                     ${referralOption}
                     </select>
                     <label>回答写真</label>
-                    <input type="file" class="form-control mb-2" name="questions[q_${currentQuestion}][answers][a_${a_index}][file_url]">
+                    <input type="file" class="form-control mb-2" name="questions[q_${currentQuestionId}][answers][a_${a_index}][file_url]" id="answer_${currentQuestionId}_${a_index}_file_url" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_file_url',this.value)">
 
                 </div>
 
 
             </div>
-            <button class="btn btn-primary" onclick="onNewField(${a_index}, ${id}, ${currentQuestion})"><i class="fa fa-plus"></i></button>
+            <button class="btn btn-primary" onclick="onNewField(${a_index}, ${id}, ${currentQuestionId})"><i class="fa fa-plus"></i></button>
         </div>
         `;
     }
@@ -133,10 +138,10 @@ function renderAnswer(answer) {
             </div>
             <div class="card-body p-2 row">
                 <div class="col">
-                    <input type="hidden" value="${id}" name="questions[q_${currentQuestion}][answers][a_${a_index}][type]">
-                    <textarea placeholder="回答" class="form-control" name="questions[q_${currentQuestion}][answers][a_${a_index}][title]" required></textarea>
+                    <input type="hidden" value="${id}" name="questions[q_${currentQuestionId}][answers][a_${a_index}][type]">
+                    <textarea placeholder="回答" class="form-control" name="questions[q_${currentQuestionId}][answers][a_${a_index}][title]" id="answer_${currentQuestionId}_${a_index}_title" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_title',this.value)" required></textarea>
                     <div>
-                        <select class="form-control" name="questions[q_${currentQuestion}][answers][a_${a_index}][referral_info]" id="referralInfo">
+                        <select class="form-control referralInfo" name="questions[q_${currentQuestionId}][answers][a_${a_index}][referral_info]" id="answer_${currentQuestionId}_${a_index}_referral_info" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_referral_info',this.value)">
                         ${referralOption}
                         </select>
                     </div>
@@ -152,7 +157,7 @@ function renderQuestion(id) {
     while ($(`#question_${q_index}`).length > 0) {
         q_index++;
     }
-    currentQuestion = q_index;
+    currentQuestionId = q_index;
     var referralOption = '<option value=""></option>';
     referral_info.forEach((info) => {
 
@@ -161,12 +166,14 @@ function renderQuestion(id) {
     })
     return `
             <div class="question" id="question_${q_index}">
-                <input type="hidden" value="${id}" name="questions[q_${q_index}][type]">
+                <input type="hidden" value="${id}" class="questionType" name="questions[q_${q_index}][type]">
+                <input type="hidden" value="${q_index}" class="questionID">
 
                 <div class="row form-group ">
                     <label  class="ml-2 pl-1 col-form-label d-flex al{q_index}:ign-items-center">質問</label>
                     <div class="col-md-8">
-                        <input type="text" placeholder="質問" class="form-control" name="questions[q_${q_index}][title]" required>
+
+                        <input type="text" placeholder="質問" value="" id="question_${q_index}_title" class="form-control" name="questions[q_${q_index}][title]" required oninput="handleInputText('question_${q_index}_title',this.value)">
                     </div>
                     <div class="col-md-1 d-flex align-items-center">
                         <button type="button" class="btn btn-danger buttonDelete" onclick="onDelete('question_${q_index}')"><i class="fa fa-times"></i></button>
@@ -183,14 +190,14 @@ function renderQuestion(id) {
                     <label  class="ml-2 pl-1 col-form-label d-flex al{q_index}:ign-items-center">関連情報</label>
                     <div class="col-md-8">
 
-                        <select class="form-control" name="questions[q_${q_index}][referral_info]" id="questionReferralInfo">
+                        <select class="form-control" name="questions[q_${q_index}][referral_info]" class="questionReferralInfo" id="questionReferralInfo_${q_index}" onchange="handleInputText('questionReferralInfo_${q_index}', this.value)">
                         ${referralOption}
                         </select>
                     </div>
                 </div>
                 <div class="row form-group">
                     <div class="col-md">
-                        <input type="file" class="form-control" value="" name="questions[q_${q_index}][file_url]">
+                        <input type="file" class="form-control" value="" id="question_${q_index}_file_url" name="questions[q_${q_index}][file_url]" oninput="handleInputText('question_${q_index}_file_url',this.prop('files'))" />
                     </div>
                 </div>
                 <div class="d-flex mb-2">
@@ -256,4 +263,10 @@ function submitFormular(){
     var formular = $('#formularSetting textarea').val();
     $('#formularSetting #formularValue').val(encodeURIComponent(formular));
     $('#formularSetting').submit();
+}
+
+function handleInputText(key, value) {
+    if (value) {
+        questionData[key] = value;
+    }
 }
