@@ -153,10 +153,10 @@ function renderAnswer(answer) {
 }
 
 function renderQuestion(id) {
-    q_index = $('#questions-container').children('.question').length + 1;
-    while ($(`#question_${q_index}`).length > 0) {
-        q_index++;
-    }
+    q_index = $('#questions-container').children().length + 1;
+    // while ($(`#question_${q_index}`).length > 0) {
+    //     q_index++;
+    // }
     currentQuestionId = q_index;
     var referralOption = '<option value=""></option>';
     referral_info.forEach((info) => {
