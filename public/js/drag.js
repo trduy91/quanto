@@ -42,7 +42,7 @@ function dropAnswer(ev) {
 
 function onNewField( a_index, id, currentQ) {
 
-    var answerArea = $(`#modalAddQuestion #question_${currentQ} #answers_${a_index}`);
+    var answerArea = $(`#modalAddQuestion #question_${currentQ} #answers_${currentQ}`);
     var referralOption = '<option value=""></option>';
     referral_info.forEach((info) => {
 
@@ -51,9 +51,10 @@ function onNewField( a_index, id, currentQ) {
     })
     var index = answerArea.find('.card-body > div').length+1;
     answerArea.find('.card-body').append(`
-        <div class="col-6 p-1">
+        <div class="col-6 p-1" id="_answer_${a_index}_sub_${index}">
+            <button type="button" class="text-danger buttonDeleteAnswer" onclick="onDelete('_answer_${a_index}_sub_${index}')"><i class="fa fa-times"></i></button>
             <input type="hidden" value="${id}" name="questions[q_${currentQ}][answers][a_${index}][type]">
-            <label>回答</label>
+            <label>回答${index}</label>
             <input placeholder="回答" class="form-control" name="questions[q_${currentQ}][answers][a_${index}][title]" id="answer_${currentQ}_${index}_title" oninput="handleInputText('answer_${currentQ}_${index}_title',this.value)" required />
             <label>値</label>
             <input class="form-control" name="questions[q_${currentQ}][answers][a_${index}][value]" placeholder="価格" id="answer_${currentQ}_${index}_value" oninput="handleInputText('answer_${currentQ}_${index}_value',this.value)" />
@@ -72,16 +73,14 @@ function onEdit(id) {
     $('#modalAddQuestion').modal('toggle');
     $('.dropArea').html($(`#${id}`).parent().html());
     $('.dropArea').find('button').css("display", "block");
+    $('.dropArea').find('.buttonDeleteAnswer').css("display", "inline-block");
     $('.dropArea').find('.buttonEdit').css("display", "none");
     $('.dropArea').find('input').prop("readonly", false);
     $('.dropArea').find('input[type="file"]').prop("disabled", false);
     $('.dropArea').find('textarea').prop("readonly", false);
     $('.dropArea').find('select').prop("disabled", false);
     $('.dropArea').find('select').prop("readonly", false);
-    // $('.dropArea').find('select#referralInfo').prop('disabled', false);
-    // if (questionData[id]) {
-    //     $(`#modalAddQuestion #${id}_title`).val(questionData[id]['title']);
-    // }
+
     for(var k in questionData) {
         $(`#modalAddQuestion #${k}`).val(questionData[k]);
     }
@@ -108,8 +107,9 @@ function renderAnswer(answer) {
             </div>
             <div class="card-body p-2 row">
                 <input type="hidden" value="${id}" name="questions[q_${currentQuestionId}][answers][a_${a_index}][type]">
-                <div class="col p-1">
-                    <label>回答</label>
+                <div class="col p-1" id="_answer_${a_index}_sub_${a_index}">
+                    <button type="button" class="text-danger buttonDeleteAnswer" onclick="onDelete('_answer_${a_index}_sub_${a_index}')"><i class="fa fa-times"></i></button>
+                    <label>回答${a_index}</label>
                     <input placeholder="回答" class="form-control" name="questions[q_${currentQuestionId}][answers][a_${a_index}][title]" id="answer_${currentQuestionId}_${a_index}_title" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_title',this.value)" required />
                     <label>値</label>
                     <input class="form-control" name="questions[q_${currentQuestionId}][answers][a_${a_index}][value]" placeholder="価格" id="answer_${currentQuestionId}_${a_index}_value" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_value',this.value)" />
@@ -170,7 +170,7 @@ function renderQuestion(id) {
                 <input type="hidden" value="${q_index}" class="questionID">
 
                 <div class="row form-group ">
-                    <label  class="ml-2 pl-1 col-form-label d-flex al{q_index}:ign-items-center">質問</label>
+                    <label  class="ml-2 pl-1 col-form-label d-flex al{q_index}:ign-items-center">質問${q_index}</label>
                     <div class="col-md-8">
 
                         <input type="text" placeholder="質問" value="" id="question_${q_index}_title" class="form-control" name="questions[q_${q_index}][title]" required oninput="handleInputText('question_${q_index}_title',this.value)">
