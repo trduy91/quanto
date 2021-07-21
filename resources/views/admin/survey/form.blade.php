@@ -173,10 +173,9 @@ echo '</script>';
                 <div id="questions-container">
                     @php
                         $q_index = 0;
-                        $a_index = 0;
                     @endphp
                     @if (isset($questions))
-                        @foreach( $questions as $question)
+                        @foreach( $questions as $index => $question)
                             @php
                                 $next_questions = [['id'=>0, 'title'=>'']];
                                 foreach ($questions as $q_item){
@@ -192,7 +191,7 @@ echo '</script>';
                                     <input type="hidden" class="questionID" value="{{$question->id}}" name="questions[q_{{$q_index}}][id]">
                                     <input type="hidden" value="{{$question->type}}" name="questions[q_{{$q_index}}][type]">
                                     <div class="row form-group ">
-                                        <label class="col-md-2 pl-1 col-form-label d-flex align-items-center">質問{{$q_index + 1}}:</label>
+                                        <label class="col-md-2 pl-1 col-form-label d-flex align-items-center">質問{{$index + 1}}:</label>
                                         <div class="col-md-8">
                                             <textarea placeholder="質問" class="form-control" name="questions[q_{{$q_index}}][title]" required>{{$question->title}}</textarea>
                                         </div>
@@ -249,7 +248,7 @@ echo '</script>';
                                     </div>
 
                                     <div class="d-flex mb-1">
-                                        <div id="answers_{{$q_index}}" class="d-flex answerDropArea flex-wrap">
+                                        <div id="answers_{{$q_index}}" class="d-flex answerDropArea flex-wrap" ondrop="dropAnswer(event)">
                                             @php
                                                 $parents = [['id' => 0, 'title' => '']];
                                                 foreach($answers as $item){
@@ -267,7 +266,7 @@ echo '</script>';
                                             @php
                                             $hasRadio = false;
                                             @endphp
-                                            @foreach($answers as $answer)
+                                            @foreach($answers as $answerIndex => $answer)
 
                                                 @if ($answer->type != 4 && $answer->type != 5 && $answer->question_id == $question->id)
                                                     <?php
@@ -279,20 +278,20 @@ echo '</script>';
                                                     <?php
                                                     }
                                                     ?>
-                                                <div class="answer card mr-2 mb-2" id="_answer_{{$a_index}}">
+                                                <div class="answer card mr-2 mb-2" id="_answer_{{$answer->id}}">
                                                     <div class="card-header d-flex justify-content-between p-2">
                                                         <span>回答</span>
-                                                        <button class="text-danger buttonDeleteAnswer" type="button" onclick="onDelete('_answer_{{$a_index}}')"><i class="fa fa-times"></i></button>
+                                                        <button class="text-danger buttonDeleteAnswer" type="button" onclick="onDelete('_answer_{{$answer->id}}')"><i class="fa fa-times"></i></button>
 
                                                     </div>
                                                     <div class="card-body p-2">
-                                                        <input type="hidden" value="{{$answer->id}}" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][id]">
-                                                        <input type="hidden" value="{{$answer->type}}" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][type]">
+                                                        <input type="hidden" value="{{$answer->id}}" name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][id]">
+                                                        <input type="hidden" value="{{$answer->type}}" name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][type]">
 
-                                                        <textarea placeholder="回答" class="form-control" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][title]" required>{{$answer->title}}</textarea>
+                                                        <textarea placeholder="回答" class="form-control" name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][title]" required>{{$answer->title}}</textarea>
                                                         @if (count($parents) > 1 && $answer->type != 3)
                                                             集団
-                                                            <select class="form-control mt-1" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][parent_id]">
+                                                            <select class="form-control mt-1" name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][parent_id]">
                                                                 @foreach($parents as $item)
                                                                     <option value="{{ $item['id'] }}" {{$item['id'] == $answer->parent_id ? 'selected' : ''}}>{{ $item['title'] }}</option>
                                                                 @endforeach
@@ -300,7 +299,7 @@ echo '</script>';
                                                         @endif
                                                         @if (count($next_questions) > 1)
                                                             次の問題
-                                                            <select class="form-control mt-1" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][next_question_id]">
+                                                            <select class="form-control mt-1" name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][next_question_id]">
                                                                 @foreach($next_questions as $n_item)
                                                                     <option value="{{ $n_item['id'] }}" {{$n_item['id'] == $answer->next_question_id ? 'selected' : ''}}>{{ $n_item['title'] }}</option>
                                                                 @endforeach
@@ -311,25 +310,34 @@ echo '</script>';
                                                 @endif
                                                 @if (($answer->type == 4 || $answer->type == 5) && $answer->question_id == $question->id)
                                                     @if (!$hasRadio)
-                                                    <div class="answer card mr-2 mb-2" id="_answer_{{$a_index}}">
+                                                    <div class="answer card mr-2 mb-2" id="_answer_{{$answer->id}}">
                                                         <div class="card-header d-flex justify-content-between p-2">
                                                             <span>回答</span>
-                                                            <button class="text-danger buttonDeleteAnswer" type="button" onclick="onDelete('_answer_{{$a_index}}', this)"><i class="fa fa-times"></i></button>
+                                                            <button class="text-danger buttonDeleteAnswer" type="button" onclick="onDelete('_answer_{{$answer->id}}', this)"><i class="fa fa-times"></i></button>
                                                         </div>
                                                         <div class="card-body p-2 row">
+                                                    <?php
+                                                    $aCount = 1;
+                                                    ?>
                                                     @endif
+                                                    <?php
+                                                    if ($hasRadio) {
+                                                        $aCount ++;
+                                                    }
+                                                    ?>
                                                     <?php
                                                     $hasRadio = true;
                                                     ?>
-                                                    <div class="col-6 p-1">
-                                                        <input type="hidden" value="{{$answer->id}}" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][id]">
-                                                        <input type="hidden" value="{{$answer->type}}" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][type]">
-                                                        <label>回答</label>
-                                                        <input placeholder="回答" class="form-control" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][title]" required value="{{$answer->title}}" />
+                                                    <div class="col-6 p-1" id="_answer_{{$answer->id}}_sub_{{$aCount}}">
+                                                        <input type="hidden" value="{{$answer->id}}" name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][id]">
+                                                        <input type="hidden" value="{{$answer->type}}" name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][type]">
+                                                        <button type="button" class="text-danger buttonDeleteAnswer" onclick="onDelete('_answer_{{$answer->id}}_sub_{{$aCount}}')"><i class="fa fa-times"></i></button>
+                                                        <label>回答{{$aCount}}</label>
+                                                        <input placeholder="回答" class="form-control" name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][title]" required value="{{$answer->title}}" />
                                                         <label>値</label>
-                                                        <input placeholder="値" class="form-control" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][value]" required value="{{$answer->value}}" />
+                                                        <input placeholder="値" class="form-control" name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][value]" required value="{{$answer->value}}" />
                                                         <label>関連情報</label>
-                                                        <select class="form-control" disabled name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][referral_info]" id="referralInfo">
+                                                        <select class="form-control" disabled name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][referral_info]" id="referralInfo">
                                                             <option value=""></option>
                                                             @foreach($referral_info as $ref)
                                                                 <option value="{{$ref->id}}" {{$ref->id == $answer->referral_info ? 'selected' : ''}}>{{$ref->name}}</option>
@@ -343,12 +351,12 @@ echo '</script>';
                                                         <div class="row form-group">
                                                             <div class="col-md">
                                                                 <input type="file" class="form-control"
-                                                                       name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][file_url]">
+                                                                       name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][file_url]">
                                                             </div>
                                                         </div>
                                                         @if (count($parents) > 1)
                                                             集団
-                                                            <select class="form-control mt-1" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][parent_id]">
+                                                            <select class="form-control mt-1" name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][parent_id]">
                                                                 @foreach($parents as $item)
                                                                     <option value="{{ $item['id'] }}" {{$item['id'] == $answer->parent_id ? 'selected' : ''}}>{{ $item['title'] }}</option>
                                                                 @endforeach
@@ -356,7 +364,7 @@ echo '</script>';
                                                         @endif
                                                         @if (count($next_questions) > 1)
                                                             次の問題
-                                                            <select class="form-control mt-1" name="questions[q_{{$q_index}}][answers][a_{{$a_index}}][next_question_id]">
+                                                            <select class="form-control mt-1" name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][next_question_id]">
                                                                 @foreach($next_questions as $n_item)
                                                                     <option value="{{ $n_item['id'] }}" {{$n_item['id'] == $answer->next_question_id ? 'selected' : ''}}>{{ $n_item['title'] }}</option>
                                                                 @endforeach
@@ -364,8 +372,8 @@ echo '</script>';
                                                         @endif
                                                     </div>
 
-                                                @php $a_index++;
-                                                @endphp
+{{--                                                @php $answer->id++;--}}
+{{--                                                @endphp--}}
                                                 @endif
                                             @endforeach
                                             @if ($hasRadio)

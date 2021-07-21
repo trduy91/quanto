@@ -112,7 +112,7 @@ var questionData = [];
         let $target = $(e.target);
         let value = $target.data('answerid');
         $('#container-id').val(value);
-        $('#sub-container-id').val(value);console.log(value);
+        $('#sub-container-id').val(value);
     });
 
     $('#btnAddReferralInfo').on('click', function () {
