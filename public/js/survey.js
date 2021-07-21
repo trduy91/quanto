@@ -23,3 +23,7 @@ $('input[name=char_color]').on('change', function() {
 $('input[name=callout_color]').on('change', function() {
     $('#preview-text').css('background', $(this).val());
 })
+loadFile = function (event, showImage){
+    $(showImage).attr('src', window.URL.createObjectURL(event.target.files[0]));
+    $(showImage).show();
+}
