@@ -63,7 +63,10 @@ function onNewField( a_index, id, currentQ) {
                 ${referralOption}
             </select>
             <label>回答写真</label>
-            <input type="file" class="form-control mb-2" name="questions[q_${currentQ}][answers][a_${index}][file_url]">
+            <div class="show_img_${currentQ}_${index}" style="padding-left: 5px;">
+                <img src="" style="display: none;width: 90%">
+            </div>
+            <input onchange="loadFile(event, '.modal-body .show_img_${currentQ}_${index} img')" accept="image/png, image/gif, image/jpeg" type="file" class="form-control mb-2" name="questions[q_${currentQ}][answers][a_${index}][file_url]">
         </div>
     `);
 }
@@ -118,7 +121,10 @@ function renderAnswer(answer) {
                     ${referralOption}
                     </select>
                     <label>回答写真</label>
-                    <input type="file" class="form-control mb-2" name="questions[q_${currentQuestionId}][answers][a_${a_index}][file_url]" id="answer_${currentQuestionId}_${a_index}_file_url" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_file_url',this.value)">
+                    <div class="show_img_${currentQuestionId}_${a_index}" style="padding-left: 5px;">
+                        <img src="" style="display: none;width: 90%">
+                    </div>
+                    <input onchange="loadFile(event, '.modal-body .show_img_${currentQuestionId}_${a_index} img')" accept="image/png, image/gif, image/jpeg" type="file" class="form-control mb-2" name="questions[q_${currentQuestionId}][answers][a_${a_index}][file_url]" id="answer_${currentQuestionId}_${a_index}_file_url" oninput="handleInputText('answer_${currentQuestionId}_${a_index}_file_url',this.value)">
 
                 </div>
 
@@ -195,9 +201,12 @@ function renderQuestion(id) {
                         </select>
                     </div>
                 </div>
+                <div class="row show_img${q_index}" style="padding-left: 5px;">
+                    <img src="" style="display: none;width: 90%">
+                </div>
                 <div class="row form-group">
                     <div class="col-md">
-                        <input type="file" class="form-control" value="" id="question_${q_index}_file_url" name="questions[q_${q_index}][file_url]" oninput="handleInputText('question_${q_index}_file_url',this.prop('files'))" />
+                        <input onchange="loadFile(event, '.modal-body .show_img${q_index} img')" accept="image/png, image/gif, image/jpeg" type="file" class="form-control" value="" id="question_${q_index}_file_url" name="questions[q_${q_index}][file_url]" />
                     </div>
                 </div>
                 <div class="d-flex mb-2">

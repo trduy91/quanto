@@ -81,15 +81,17 @@ echo '</script>';
 
                     </div>
                 </div>
-                @if (isset($survey['profile_path']))
-                    <div>
+                <div id="show_logo">
+                    <?php if(isset($survey['profile_path'])){?>
                         <img src="{{asset($survey['profile_path'])}}" class="fs-profile-image">
-                    </div>
-                @endif
+                    <?php }else{?>
+                        <img src="#" class="fs-profile-image" style="display: none;">
+                    <?php }?>
+                </div>
                 <div class="form-group row">
                     <lable class="col-md-3 col-form-label">ブランドロゴ</lable>
                     <div class="col-md-6 d-flex align-items-center">
-                        <input type="file" name="profile_path">
+                        <input type="file" name="profile_path" onchange="loadFile(event, '#show_logo img')" data-showimage="#show_log img" accept="image/png, image/gif, image/jpeg">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -219,15 +221,16 @@ echo '</script>';
                                             </select>
                                         </div>
                                     </div>
-                                    @if ($question->file_url != null)
-                                        <div class="row">
+                                    <div class="row show_img{{$q_index}}" >
+                                        <?php if($question->file_url){?>
                                             <img src="{{ asset($question->file_url) }}" class="col fs-question-image mb-2">
-                                        </div>
-                                    @endif
+                                        <?php }else{?>
+                                            <img src="" class="col fs-question-image mb-2" style="display: none">
+                                        <?php }?>
+                                    </div>
                                     <div class="row form-group">
                                         <div class="col-md">
-                                            <input type="file" class="form-control"
-                                                   name="questions[q_{{$q_index}}][file_url]">
+                                            <input onchange="loadFile(event, '.modal-body .show_img{{$q_index}} img')" accept="image/png, image/gif, image/jpeg"type="file" class="form-control" name="questions[q_{{$q_index}}][file_url]">
                                         </div>
                                     </div>
 
@@ -343,14 +346,16 @@ echo '</script>';
                                                                 <option value="{{$ref->id}}" {{$ref->id == $answer->referral_info ? 'selected' : ''}}>{{$ref->name}}</option>
                                                             @endforeach
                                                         </select>
-                                                        @if ($answer->file_url != null)
-                                                            <div class="row">
+                                                        <div class="row show_img_{{$q_index}}_{{$answer->id}}" >
+                                                            <?php if($answer->file_url){?>
                                                                 <img src="{{ asset($answer->file_url) }}" class="col fs-question-image mb-2">
-                                                            </div>
-                                                        @endif
+                                                            <?php }else{?>
+                                                                <img src="" class="col fs-question-image mb-2" style="display: none">
+                                                            <?php }?>
+                                                        </div>
                                                         <div class="row form-group">
                                                             <div class="col-md">
-                                                                <input type="file" class="form-control"
+                                                                <input onchange="loadFile(event, '.modal-body .show_img_{{$q_index}}_{{$answer->id}} img')" accept="image/png, image/gif, image/jpeg" type="file" class="form-control"
                                                                        name="questions[q_{{$q_index}}][answers][a_{{$answer->id}}][file_url]">
                                                             </div>
                                                         </div>
