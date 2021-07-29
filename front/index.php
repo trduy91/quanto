@@ -53,7 +53,7 @@ $survey_id = (isset($_GET['id'])) ? $_GET['id'] : -1;
         </div>
     </header>
     <div id="content" class="content">
-        <form action="http://formstylee-admin.com/api/v1/client/save" method="POST">
+        <form action="https://quanto3.com/api/v1/client/save" method="POST">
             <input type="hidden" name="survey_id" value="<?=$survey_id;?>" />
             <div id="survey" class="survey">
             </div>

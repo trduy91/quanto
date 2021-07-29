@@ -7,7 +7,7 @@ function newline(str) {
 
 // var serverHost = 'http://formstylee.com/public/';
 var serverHost = 'https://quanto3.com';
-//var serverHost = 'http://localhost/quanto';
+// var serverHost = 'http://localhost/quanto';
 
 var currentTab = 0;
 var formular = '';
@@ -237,9 +237,9 @@ function displaySurvey(data) {
 
             var q_referral = data.referral.filter(re => re.id == q.referral_info);
             q_html += `
-            <div class="tab" id="q_${q.id}">Question
+            <div class="tab" id="q_${q.id}">質問
               <div class="question">
-                <div class="title">${q.title}</div>
+                <div class="title">${q.title}
                 ${q.file_url ? (
                   `
                     <div class="question-image">
@@ -247,6 +247,7 @@ function displaySurvey(data) {
                     </div>
                   `
                 )  : ''}
+                </div>
                 <input type="hidden" id="answer_q_${q.id}" name="answers['${q.id}']">
                 ${q_referral.length > 0 ? (
                     `
@@ -343,7 +344,7 @@ function renderAnswer(answerList, questionID) {
             if (ans.type == 1) {
                 resultHtml += `
                     <div class="answer-input">
-                        <div class="title">${ans.title}</div>
+                        <div class="title">${ans.title}
                         ${ans.file_url ? (
                             `
                             <div class="answer-image" onclick="handleSelectAnswer(this, ${questionID}, ${ans.id})">
@@ -351,6 +352,7 @@ function renderAnswer(answerList, questionID) {
                             </div>
                           `
                         )  : ''}
+                        </div>
                         ${ans_referral.length > 0 ? (
                             `
                             <span class="referralInfo"
