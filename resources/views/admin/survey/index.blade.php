@@ -51,7 +51,7 @@
                             style="background-color: {{$survey->border_color}}; width: 40px; display: block">&nbsp;</span>
                     </td>
                     <td>
-                    <a class="clipboard" style="cursor: pointer;" data-clipboard-text="http://quanto3.com/front/?id={{ $survey->token }}" title="http://quanto3.com/front/?id={{ $survey->token }}"><i
+                    <a class="clipboard" style="cursor: pointer;" data-clipboard-text="https://quanto3.com/front/?id={{ $survey->token }}" title="https://quanto3.com/front/?id={{ $survey->token }}"><i
                                     class="fa fa-clipboard mr-1"></i></a>
                         <a href="{{ route('admin.survey.edit',['id'=>$survey->id]) }}"><i class="fa fa-edit"></i></a>
                         <a class="text-danger" href="{{ route('admin.survey.delete',['id'=>$survey->id]) }}"><i

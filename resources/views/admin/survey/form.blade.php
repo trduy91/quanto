@@ -3,6 +3,22 @@
 @section('js')
     <script src="{{ asset('js/survey.js') }}"></script>
 {{--    <script src="{{ asset('js/drag.js') }}"></script>--}}
+    <script src="{{ asset('vendor/clipboard/clipboard.min.js') }}"></script>
+    <script>
+        var btns = document.querySelectorAll('.clipboard');
+        var clipboard = new ClipboardJS(btns);
+
+        clipboard.on('success', function (e) {
+            $('.clip-toast').addClass('open');
+            setTimeout(function() {
+                $('.clip-toast').removeClass('open');
+            }, 1000);
+        });
+
+        clipboard.on('error', function (e) {
+            console.log(e);
+        });
+    </script>
 @endsection
 <?php
 echo '<script>';
@@ -447,14 +463,15 @@ echo '</script>';
                 </div>
             </div>
             <div class="card">
-                <div>
-                    下記のHTMLをコピーして、他のサイトにペーストできます。
-                </div>
-                <div class="embbed-html">
-                    <?php
+                <?php
+                $iFrameSource = '';
+                $fullSource = '';
+                if (isset($survey['token'])){
+                    $iFrameSource = htmlspecialchars('
+                        <iFrame src="'.$clientHost.'?id='. $survey['token'].'" width="100%" height="100%" name="quanto3" frameborder="0"></iFrame>
 
-                    if (isset($survey['token'])){
-                        echo htmlspecialchars('
+                    ');
+                    $fullSource = htmlspecialchars('
                         <div class="quanto-embbed">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -504,13 +521,55 @@ echo '</script>';
                         </div>
 
                     ');
-                    }
 
-                    ?>
+                ?>
+                <div>
+                    IFrameまたはすべてソースをコピーしてください
                 </div>
+                <div class="embbed-html">
+                    <div>
+                        <a class="clipboard" style="cursor: pointer;" title="コピー" data-clipboard-text="<?php echo $iFrameSource;?>"><i class="fa fa-clipboard mr-1"></i>コピーします</a>
+                    </div>
+                    <?php echo $iFrameSource;?>
+                </div>
+                <div class="embbed-html">
+                    <div>
+                        <a class="clipboard" style="cursor: pointer;" title="コピー" data-clipboard-text="<?php echo $fullSource;?>"><i class="fa fa-clipboard mr-1"></i>コピーします</a>
+                    </div>
+                    <?php echo $fullSource;?>
+                </div>
+                <?php
+                }
+
+                ?>
+
+
             </div>
         </div>
     </div>
+    <div class="clip-toast">
+        ソースをコピーしました。
+    </div>
+    <style>
+        .clip-toast {
+            position: fixed;
+            font-size: 12px;
+            background: #00000088;
+            width: fit-content;
+            padding: 8px 16px;
+            border-radius: 4px;
+            right: 50px;
+            bottom: 50px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 300ms cubic-bezier(0.335, 0.01, 0.03, 1.36);
+            color: white;
+        }
+        .open {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
 {{--    @include('admin/survey/modal', ['title' => '質問追加', 'modal_id' => 'AddQuestion', 'items' => $question_types])--}}
     @include('admin/survey/question', ['title' => '質問追加', 'questionTypes' => $question_types, 'answerTypes' => $answer_types, 'referral_info' => $referral_info])
     @include('admin/survey/modal', ['title' => '回答追加', 'modal_id' => 'AddAnswer', 'items' => $answer_types])
