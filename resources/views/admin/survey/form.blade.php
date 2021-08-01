@@ -237,6 +237,16 @@ echo '</script>';
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="row form-group ">
+                                        <label  class="ml-2 pl-1 col-form-label d-flex al{{$q_index}}:ign-items-center">回答整列</label>
+                                        <div class="col-md-8">
+                                            <select class="form-control" disabled name="questions[q_{{$q_index}}][answer_align]" id="questionAnswerAlign_{{$q_index}}">
+                                                <option value="0" {{$question->answer_align == 0 ? 'selected':''}}>左寄せ</option>
+                                                <option value="1" {{$question->answer_align == 1 ? 'selected':''}}>センター</option>
+                                                <option value="2" {{$question->answer_align == 2 ? 'selected':''}}>右寄せ</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                     <div class="row show_img{{$q_index}}" >
                                         <?php if($question->file_url){?>
                                             <img src="{{ asset($question->file_url) }}" class="col fs-question-image mb-2">
