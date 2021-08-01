@@ -9,6 +9,6 @@ return [
         'admin_email' => 'hosokawa@quanto.xbiz.jp',
         'admin_name' => 'hosokawa',
     ],
-    'clientHost' => 'https://quanto3.com/front/',
-    'adminHost' => 'https://quanto3.com'
+    'clientHost' => 'http://quanto-client.loc/',
+    'adminHost' => 'http://quanto.loc'
 ];

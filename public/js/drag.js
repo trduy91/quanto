@@ -201,6 +201,16 @@ function renderQuestion(id) {
                         </select>
                     </div>
                 </div>
+                <div class="row form-group ">
+                     <label  class="ml-2 pl-1 col-form-label d-flex al{q_index}:ign-items-center">回答整列</label>
+                    <div class="col-md-8">
+                        <select class="form-control" name="questions[q_${q_index}][answer_align]" id="questionAnswerAlign_${q_index}" onchange="handleInputText('questionAnswerAlign_${q_index}', this.value)">
+                            <option value="0" selected>左寄せ</option>
+                            <option value="1">センター</option>
+                            <option value="2">右寄せ</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="row show_img${q_index}" style="padding-left: 5px;">
                     <img src="" style="display: none;width: 90%">
                 </div>

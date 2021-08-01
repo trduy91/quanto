@@ -258,7 +258,7 @@ function displaySurvey(data) {
                 ) : ''}
               </div>
               <div class="answerList">
-                ${renderAnswer(data.answers, q.id)}
+                ${renderAnswer(data.answers, q.id, q.answer_align)}
               </div>
             </div>
             `;
@@ -290,7 +290,7 @@ function displaySurvey(data) {
                           <div class="input-group-prepend">
                             <span class="input-group-text" id="inputGroup-sizing-default">郵便番号</span>
                           </div>
-                          <input type="text" placeholder="111-1111" name="zip_code" class="form-control" aria-label="メールアドレス" aria-describedby="inputGroup-sizing-default">
+                          <input type="text" placeholder="111-1111" name="zip_code" class="form-control" aria-label="メールアドレス" aria-describedby="inputGroup-sizing-default" onKeyUp="AjaxZip3.zip2addr(this,\'\',\'address\',\'address\');">
                         </div>
                         <div class="input-group mb-3">
                           <div class="input-group-prepend">
@@ -335,16 +335,19 @@ function displaySurvey(data) {
 
 }
 
-function renderAnswer(answerList, questionID) {
+function renderAnswer(answerList, questionID, answer_align) {
     if (answerList.length > 0){
         var answers = answerList.filter((answer) => answer.question_id === questionID)
         var resultHtml = '';
+        var answerAlign = 'left';
+        if(answer_align == 1)  answerAlign = 'center';
+        if(answer_align == 2)  answerAlign = 'right';
         answers.forEach((ans) => {
             var ans_referral = initial_data.referral.filter(re => re.id == ans.referral_info);
             if (ans.type == 1) {
                 resultHtml += `
                     <div class="answer-input">
-                        <div class="title">${ans.title}
+                        <div class="title" style="text-align: ${answerAlign}">${ans.title}</div>
                         ${ans.file_url ? (
                             `
                             <div class="answer-image" onclick="handleSelectAnswer(this, ${questionID}, ${ans.id})">
@@ -370,7 +373,7 @@ function renderAnswer(answerList, questionID) {
             }else {
                 resultHtml += `
             <div class="answer-select">
-                <div class="title" onclick="handleSelectAnswer(this, ${questionID}, ${ans.id})">${ans.title}</div>
+                <div class="title" style="text-align: ${answerAlign}" onclick="handleSelectAnswer(this, ${questionID}, ${ans.id})">${ans.title}</div>
                 ${ans.file_url ? (
                     `
                     <div class="answer-image" onclick="handleSelectAnswer(this, ${questionID}, ${ans.id})">
@@ -651,8 +654,8 @@ $(document).bind('show-last-message', function(event, data) {
         var form_html = '<div class="q-a-form-fields-wrapper"><div class="q-a-form-fields">';
         form_html += '<div class="q-a-form-field-row"><p>メールアドレス</p><input type="email" placeholder="test@mail.com" name="email" /></div>';
         form_html += '<div class="q-a-form-field-row"><p>お名前</p><input type="text" placeholder="山田 太郎" name="full_name" /></div>';
-        form_html += '<div class="q-a-form-field-row"><p>郵便番号</p><input type="text" placeholder="111-1111" name="zip_code" /></div>';
-        form_html += '<div class="q-a-form-field-row"><p>住所</p><input type="text" placeholder="" name="address" /></div>';
+        form_html += '<div class="q-a-form-field-row"><p>郵便番号11</p><input type="text" placeholder="111-1111" name="zip_code" onKeyUp="AjaxZip3.zip2addr(this,\'\',\'address\',\'address\');"/></div>';
+        form_html += '<div class="q-a-form-field-row"><p>住所</p><input type="text" placeholder="" name="address"/></div>';
         form_html += '<div class="q-a-form-field-row"><p>電話番号</p><input type="tel" placeholder="03-1234-5678" name="phone_number" /></div>';
         form_html += '</div>';
         form_html += '<input type="submit" value="送信する"></div>';

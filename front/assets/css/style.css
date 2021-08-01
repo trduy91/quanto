@@ -703,7 +703,6 @@ header .title-desc .description {
   margin-top: 50px;
 }
 .answer-select {
-  display: flex;
   margin: 20px 0;
   border: 1px solid;
   justify-content: space-between;

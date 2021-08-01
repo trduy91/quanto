@@ -185,6 +185,7 @@ class SurveyController extends Controller
 				$question->survey_id = $survey->id;
 				$question->ord = $ord;
 				$question->referral_info = $item['referral_info'];
+                $question->answer_align = $item['answer_align'];
 				$questionCode = $item['question_code'] ? $item['question_code'] : '' ;
                 $question_setting['question_code'] = $questionCode;
 
