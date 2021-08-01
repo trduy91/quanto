@@ -115,7 +115,7 @@ class ApiController extends Controller
         $client->address = $request->get('address');
         $client->phone_number = $request->get('phone_number');
         $client->survey_id = $survey->id;
-        $total = $request->get('total')  ? $request->get('total') : 0 ;
+        $total = is_numeric($request->get('total'))  ? $request->get('total') : 0 ;
         $client->total = $total;
         $client->send_mail_status = 0;
         $client->save();
