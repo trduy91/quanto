@@ -49,10 +49,10 @@ echo '</script>';
                             <div class="col-md-12 d-flex">
                                 <lable class="col-form-label mr-3">全体背景:</lable>
                                 <input class="" type="color" name="background_color"
-                                       value="{{ isset($survey['background_color']) ? $survey['background_color'] : '#eeebff' }}">
+                                       value="{{ isset($survey['background_color']) ? $survey['background_color'] : '#ffffff' }}">
                                 <lable class="col-form-label mx-3">文字:</lable>
                                 <input class="" type="color" name="char_color"
-                                       value="{{ isset($survey['char_color']) ? $survey['char_color'] : '#785cff' }}">
+                                       value="{{ isset($survey['char_color']) ? $survey['char_color'] : '#000000' }}">
                                 <lable class="col-form-label mx-3">枠カラー:</lable>
                                 <input class="" type="color" name="border_color".
                                        value="{{ isset($survey['border_color']) ? $survey['border_color'] : '#785cff' }}">
